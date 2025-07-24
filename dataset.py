@@ -17,7 +17,7 @@ def is_valid_Sequence(seq):
 def load_and_clean_data(file_path):
     """加载CSV文件并清洗非法序列"""
     df = pd.read_csv(file_path)
-    print(f"读取列名: {df.columns.tolist()}")
+    # print(f"读取列名: {df.columns.tolist()}")
 
     df['Sequence'] = df['Sequence'].str.upper()
     df = df[df['Sequence'].apply(is_valid_Sequence)]
@@ -44,24 +44,28 @@ def save_split(df, output_dir, train_ratio=0.8):
     print(f"✅ 数据已成功拆分并保存：\n - {train_path}\n - {val_path}")
 
 class PeptideDataset(Dataset):
-    def __init__(self, sequences, seq_length=20):
+    def __init__(self, sequences, seq_length=20, char2idx=None):
         self.data = []
+        self.seq_length = seq_length
+        self.char2idx = char2idx
+        self.vocab_size = len(char2idx)
+
         for seq in sequences:
             for i in range(len(seq) - seq_length):
                 input_seq = seq[i:i+seq_length]
                 target_seq = seq[i+1:i+seq_length+1]
                 self.data.append((input_seq, target_seq))
-        self.seq_length = seq_length
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
         input_seq, target_seq = self.data[idx]
-        x = torch.zeros(self.seq_length, vocab_size)
+        x = torch.zeros(self.seq_length, self.vocab_size)
         y = torch.zeros(self.seq_length, dtype=torch.long)
         for i, ch in enumerate(input_seq):
-            x[i][char2idx[ch]] = 1.0
+            x[i][self.char2idx[ch]] = 1.0
         for i, ch in enumerate(target_seq):
-            y[i] = char2idx[ch]
+            y[i] = self.char2idx[ch]
         return x, y
+

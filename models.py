@@ -10,6 +10,7 @@ class CharLSTMGenerator(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x, hidden=None):
+        # x = self.embed(x)
         out, hidden = self.lstm(x, hidden)
         out = self.fc(out)
         return out, hidden
