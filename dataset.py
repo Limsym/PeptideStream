@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 import torch  # 你后面有用到 torch.zero()
 
-
 VALID_AMINO_ACIDS = set("ACDEFGHIKLMNPQRSTVWY")  # 标准20种氨基酸
 MIN_LENGTH = 10  # 可以调节这个阈值
 
