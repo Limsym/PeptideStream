@@ -12,7 +12,10 @@ from models import CharLSTMGenerator
 from torch.utils.data import DataLoader
 from dataset import load_and_clean_data, save_split, PeptideDataset
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
+timestamp = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+start_time = time.time()
 
 # === 配置部分 ===
 INPUT_FILE = "data/peptides.csv"  # 原始数据路径
@@ -42,8 +45,10 @@ train_path = os.path.join(OUTPUT_DIR, "train.txt")
 sequences = load_sequences_from_file(train_path)
 
 # 构建字符表
-chars = sorted(list(set("".join(sequences))))
-char2idx = {ch: idx for idx, ch in enumerate(chars)}
+# chars = sorted(list(set("".join(sequences))))
+# char2idx = {ch: idx for idx, ch in enumerate(chars)}
+amino_acids = list("ACDEFGHIKLMNPQRSTVWY")      # 标准20种氨基酸单字母代码，顺序可自由定义
+char2idx = {ch: idx for idx, ch in enumerate(amino_acids)}
 idx2char = {idx: ch for ch, idx in char2idx.items()}
 vocab_size = len(chars)
 
@@ -94,51 +99,89 @@ def validate(model, dataloader, criterion):
     avg_loss = total_loss / len(dataloader)
     print(f"验证集平均Loss: {avg_loss:.4f}")
     model.train()
+    return avg_loss
 
 def train(model, train_loader, val_loader, optimizer, criterion, start_epoch=0, num_epochs=10):
     # 记录训练的次数
     total_train_step = 0
+
+    # === 初始化记录结构 ===
+    train_losses = []
+    val_losses = []
+    best_val_loss = checkpoint.get('val_loss_best', float('inf'))
+    best_model_state = None                         # 用于存储最佳模型参数
+    best_epoch = 0
+
     for epoch in range(start_epoch, num_epochs):
         print("-------第{}轮训练开始-------".format(epoch + 1))
         total_loss = 0
-        for x, y in train_loader:
+
+        progress_bar = tqdm(train_loader, desc=f"Epoch {epoch + 1}", leave=False)
+
+        for x, y in progress_bar:
             x, y = x.to(device), y.to(device)
             optimizer.zero_grad()
             output, _ = model(x)
             loss = criterion(output.view(-1, output.size(-1)), y.view(-1))
             loss.backward()
             optimizer.step()
-            total_loss += loss.item()
 
+            total_loss += loss.item()
             total_train_step += 1
 
-            if total_train_step % 250 == 0:
-                end_time = time.time()
-                print(end_time - start_time)
-                print("训练次数：{}, Loss：{}".format(total_train_step, loss.item()))
+            # 更新进度条显示
+            progress_bar.set_postfix(loss=loss.item())
 
+            # if total_train_step % 250 == 0:
+            #     end_time = time.time()
+            #     print(end_time - start_time)
+            #     print("训练次数：{}, Loss：{}".format(total_train_step, loss.item()))
+
+            # TensorBoard记录
             writer.add_scalar('train_loss', loss.item(), total_train_step)
 
-        # 每轮结束时打印一次总loss
-        avg_epoch_loss = total_loss / len(train_loader)
-        print(f"✅ Epoch [{epoch + 1}/{num_epochs}] 完成，平均Loss: {avg_epoch_loss:.4f}")
+        avg_train_loss = total_loss / len(train_loader)
 
-        # 验证步骤开始
-        validate(model, val_loader, criterion)
+        # 验证
+        avg_val_loss = validate(model, val_loader, criterion)
+
+        train_losses.append(avg_train_loss)
+        val_losses.append(avg_val_loss)
+
+        # 保存最优模型参数
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            best_model_state = model.state_dict()
+            best_epoch = epoch + 1
+
+        # 打印或保存
+        print(f"Epoch {epoch + 1}/{epochs} - Train Loss: {avg_train_loss:.4f} - Val Loss: {avg_val_loss:.4f}")
+
+        # 保存最优模型
+        torch.save(best_model_state, "best_model.pt")
+        print(f"🎯 最优模型来自 Epoch {best_epoch}, Val Loss: {best_val_loss:.4f}")
 
         # 保存 checkpoint
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
-            'loss': total_loss
+            'loss': total_loss,
+            'val_loss_best': best_val_loss
         }, "checkpoint.pt")
 
-writer = SummaryWriter(log_dir='runs/')
 
-start_time = time.time()
+# 拼接路径
+log_dir = os.path.join("logs", f"run-{timestamp}")
+
+writer = SummaryWriter(log_dir=log_dir)
+
 # 调用训练函数
 train(model, train_loader, val_loader, optimizer, criterion, start_epoch=start_epoch, num_epochs=epochs)
 
 writer.close()
-# tensorboard --logdir=runs
+# tensorboard --logdir=log_dir
+end_time = time.time()
+print(f"脚本运行了 {end_time - start_time:.0f} 秒钟")
+
+
