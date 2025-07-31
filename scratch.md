@@ -18,3 +18,5 @@ pip install -U huggingface_hub
 
 --从 cli 转向 hf 命令--
 | ⚠️  Warning: 'huggingface-cli download' is deprecated. Use 'hf download' instead.
+ 
+[x] 调用 ESM 并保存 embeddings

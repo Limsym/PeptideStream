@@ -40,6 +40,5 @@ embeddings = np.array(embeddings)
 
 # 保存为 .npy
 np.save("protein_embeddings.npy", embeddings)
-
 # 保存为 .csv（带上序列索引）
 pd.DataFrame(embeddings, index=sequences).to_csv("protein_embeddings.csv")
