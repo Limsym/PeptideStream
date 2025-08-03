@@ -12,19 +12,27 @@ tokenizer = EsmTokenizer.from_pretrained(local_path)
 model = EsmModel.from_pretrained(local_path)
 model.eval()
 
-sequence = "MKTFFVLVVLILALVG"
-inputs = tokenizer(sequence, return_tensors="pt")
-with torch.no_grad():
-    outputs = model(**inputs)
-embedding = outputs.last_hidden_state  # shape: [1, L, D]
-
-# 获取最后一层隐藏状态 (B, L, D)
-token_embeddings = outputs.last_hidden_state
-
-print("Embedding shape:", token_embeddings.shape)  # 示例输出: torch.Size([1, L, D])
+# 测试
+# sequence = "MKTFFVLVVLILALVG"
+# inputs = tokenizer(sequence, return_tensors="pt")
+# with torch.no_grad():
+#     outputs = model(**inputs)
+# embedding = outputs.last_hidden_state  # shape: [1, L, D]
+#
+# # 获取最后一层隐藏状态 (B, L, D)
+# token_embeddings = outputs.last_hidden_state
+#
+# print("Embedding shape:", token_embeddings.shape)  # 示例输出: torch.Size([1, L, D])
 
 import numpy as np
 import pandas as pd
+
+
+def load_esm_components(local_path):
+    tokenizer = EsmTokenizer.from_pretrained(local_path)
+    model = EsmModel.from_pretrained(local_path)
+    model.eval()
+    return model, tokenizer
 
 def extract_protein_embedding(sequence: str, model, tokenizer):
     inputs = tokenizer(sequence, return_tensors="pt")
@@ -34,11 +42,13 @@ def extract_protein_embedding(sequence: str, model, tokenizer):
     cls_embedding = outputs.last_hidden_state[0, 0].numpy()
     return cls_embedding
 
-sequences = ["MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQ", "GSHSMRYFYTAMSRPGRGEPRFISVGYVDDTQFVRF"]
-embeddings = [extract_protein_embedding(seq, model, tokenizer) for seq in sequences]
-embeddings = np.array(embeddings)
 
-# 保存为 .npy
-np.save("protein_embeddings.npy", embeddings)
-# 保存为 .csv（带上序列索引）
-pd.DataFrame(embeddings, index=sequences).to_csv("protein_embeddings.csv")
+# 测试
+# sequences = ["MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQ", "GSHSMRYFYTAMSRPGRGEPRFISVGYVDDTQFVRF"]
+# embeddings = [extract_protein_embedding(seq, model, tokenizer) for seq in sequences]
+# embeddings = np.array(embeddings)
+#
+# # 保存为 .npy
+# np.save("protein_embeddings.npy", embeddings)
+# # 保存为 .csv（带上序列索引）
+# pd.DataFrame(embeddings, index=sequences).to_csv("protein_embeddings.csv")
