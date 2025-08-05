@@ -1,9 +1,11 @@
+# tox_embedding_generator.py
+
 import pandas as pd
 import numpy as np
 import os
 import time
 from tqdm import tqdm
-from esm_embedding_extractor import load_esm_components, extract_protein_embedding
+from embedding.esm_embedding_extractor import load_esm_components, extract_protein_embedding
 
 
 def generate_embeddings_in_batches(df, model, tokenizer,
@@ -56,14 +58,14 @@ esm_path = "d:/Users/Siqiniq/.cache/huggingface/hub/models--facebook--esm2_t33_6
 model, tokenizer = load_esm_components(esm_path)
 
 # 读取数据
-df = pd.read_csv("data/ToxinPred.csv")
+df = pd.read_csv("../data/ToxinPred.csv")
 
 # 执行增强版 embedding 提取
 X, y = generate_embeddings_in_batches(
     df,
     model,
     tokenizer,
-    save_path="data/esm2_toxin_embeddings.npy",  # 自定义保存路径
+    save_path="../data/esm2_toxin_embeddings.npy",  # 自定义保存路径
     save_every=50                                 # 每处理50条保存一次
 )
 

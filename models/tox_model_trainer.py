@@ -1,4 +1,4 @@
-# tox_model.py
+# tox_model_trainer.py
 
 import numpy as np
 import pandas as pd
@@ -11,13 +11,13 @@ import seaborn as sns
 
 # ========== 1. 加载数据 ==========
 # 假设你已经保存好 .npy 和 .csv 文件
-embedding_path = "./data/esm2_toxin_embeddings.npy"
-label_csv_path = "./data/ToxinPred.csv"
+embedding_path = "../data/esm2_toxin_embeddings.npy"
+label_csv_path = "../data/ToxinPred.csv"
 
-X = np.load("data/esm2_toxin_embeddings.npy", allow_pickle=True)
+X = np.load("../data/esm2_toxin_embeddings.npy", allow_pickle=True)
 
 # 加载标签，要求有 'Sequence', 'Positive' 列
-df = pd.read_csv("data/ToxinPred.csv")
+df = pd.read_csv("../data/ToxinPred.csv")
 df = df[["Sequence", "Positive"]].dropna()
 valid_aas = set("ACDEFGHIKLMNPQRSTVWY")
 df = df[df["Sequence"].apply(lambda s: all(aa in valid_aas for aa in s))].drop_duplicates()
@@ -52,5 +52,5 @@ plt.tight_layout()
 plt.show()
 
 # ========== 6. 保存模型 ==========
-joblib.dump(model, "toxicity_predictor.pkl")
+joblib.dump(model, "../data/toxicity_predictor.pkl")
 print("✅ 模型已保存为 'toxicity_predictor.pkl'")
