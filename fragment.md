@@ -22,7 +22,7 @@ pip install -U huggingface_hub
 [x] 调用 ESM 并保存 embeddings
 
 [] prepare the stability module
-- dataset 
+- dataset: FireProtDB
 - feature
 - train
 - immobilize
