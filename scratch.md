@@ -20,3 +20,6 @@ pip install -U huggingface_hub
 | ⚠️  Warning: 'huggingface-cli download' is deprecated. Use 'hf download' instead.
  
 [x] 调用 ESM 并保存 embeddings
+
+[] prepare the stability module
+- [] dataset 
