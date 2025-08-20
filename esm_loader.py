@@ -4,7 +4,7 @@ from transformers import EsmModel, EsmTokenizer
 
 def load_esm_model(
     model_name: str = "facebook/esm2_t33_650M_UR50D",
-    cache_dir: str = "./models/esm2_t33_650M_UR50D",
+    cache_dir: str = "/models/esm2_t33_650M_UR50D",
     local_only: bool = False
 ):
     print(f"🧠 准备加载 ESM 模型：{model_name}")

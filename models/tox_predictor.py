@@ -4,7 +4,7 @@ import joblib
 import numpy as np
 
 class ToxPredictor:
-    def __init__(self, model_path="./data/toxicity_predictor.pkl"):
+    def __init__(self, model_path="./models/toxicity_predictor.pkl"):
         self.model = joblib.load(model_path)
 
     def predict(self, embedding: np.ndarray) -> float:

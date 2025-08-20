@@ -52,5 +52,5 @@ plt.tight_layout()
 plt.show()
 
 # ========== 6. 保存模型 ==========
-joblib.dump(model, "../data/toxicity_predictor.pkl")
+joblib.dump(model, "../models/toxicity_predictor.pkl")
 print("✅ 模型已保存为 'toxicity_predictor.pkl'")
