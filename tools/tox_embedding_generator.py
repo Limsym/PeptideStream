@@ -68,4 +68,3 @@ X, y = generate_embeddings_in_batches(
     save_path="../data/esm2_toxin_embeddings.npy",  # 自定义保存路径
     save_every=50                                 # 每处理50条保存一次
 )
-
