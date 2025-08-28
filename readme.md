@@ -53,14 +53,14 @@
 | 输出可视化评估结果（如 ROC 曲线）             | [] | 含混淆矩阵等分析，使用 radar chart、score map 等方式呈现多指标 |
 | 封装批量预测接口（对接生成模块）                | [] | 支持新序列自动评估                                  |
 
-多指标评价非常适合此项目。如果想走得远，建议把多目标优化作为独立研究方向来设计，甚至尝试用强化学习或贝叶斯优化来搜索最优序列组合。这是因为多目标优化能：
+多指标评价非常适合此项目，并适宜作为独立研究方向来设计，甚至尝试用强化学习或贝叶斯优化来搜索最优序列组合。这是因为多目标优化能：
 
-- 能带来一个看起来聪明的打分；
 - 能进行精度更高的预测；
 - 保留了维度信息，**支持更清晰的可视化、可解释性和后续优化**；
 - 可设定阈值过滤，**实现早期淘汰低质量序列**
 - 真实保留 trade-off 关系，**保持生物建模的可信性**，展现各预测项目的风险与机会；
 - 不合成打分项，**避免预测生物信息的损失或过拟合**
+- 能带来一个看起来聪明的打分以便下游使用；
 
 ### 4️⃣ 模型训练与调试模块
 
@@ -74,23 +74,23 @@
 
 ### 5️⃣ 结果评估模块
 
-| 子任务 | 状态 | 说明 |
-| --- | --- | --- |
+| 子任务 | 状态  | 说明 |
+| --- |-----| --- |
 | 可视化训练过程中的 Loss 曲线 | [x] | 使用 TensorBoard 或 matplotlib |
 | 展示多肽生成样例 | [x] | 生成多条序列 |
-| 评估序列多样性与分布等指标 | [] | 长度、重复率、AA频率等 |
-| 利用 ESM 嵌入评估毒性预测能力 | [] | 与 baseline 分类器对比 |
+| 评估序列多样性与分布等指标 | []  | 长度、重复率、AA频率等 |
+| 利用 ESM 嵌入评估毒性预测能力 | [x] | 与 baseline 分类器对比 |
 
 ---
 
 ### 6️⃣ 展示与发布模块
 
-| 子任务 | 状态 | 说明 |
-| --- | --- | --- |
-| 编写 README 或 PPT 总结思路 | [] | 面向申请场景 |
-| 绘制模型结构图 / 数据流程图 | [] | 支持演示 |
+| 子任务 | 状态  | 说明 |
+| --- |-----| --- |
+| 编写 README 或 PPT 总结思路 | [x] | 面向申请场景 |
+| 绘制模型结构图 / 数据流程图 | []  | 支持演示 |
 | 上传至 GitHub 并进行网页托管 | [x] | 用于查看 demo |
-| 增加完整的生成-评估流程图 | [] | 可使用 Mermaid 或绘图软件 |
+| 增加完整的生成-评估流程图 | []  | 可使用 Mermaid 或绘图软件 |
 
 ---
 
@@ -107,3 +107,7 @@
 | 集成 Streamlit 接口 | 更强展示与迭代能力 |
 
 ---
+
+## 参考资料
+1. 预测蛋白热稳定性：
+Ieva Pudžiuvelytė, Kliment Olechnovič, Egle Godliauskaite, Kristupas Sermokas, Tomas Urbaitis, Giedrius Gasiunas, Darius Kazlauskas, TemStaPro: protein thermostability prediction using sequence representations from protein language models, Bioinformatics, Volume 40, Issue 4, April 2024, btae157, https://doi.org/10.1093/bioinformatics/btae157 [https://academic.oup.com/bioinformatics/article/40/4/btae157/7632735]
